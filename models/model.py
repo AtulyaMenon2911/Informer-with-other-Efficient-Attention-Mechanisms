@@ -32,6 +32,7 @@ class Informer(nn.Module):
         else:
             Attn = FullAttention
         # Encoder
+        print("out_len",out_len)
         self.encoder = Encoder(
             [
                 EncoderLayer(
@@ -55,9 +56,9 @@ class Informer(nn.Module):
             [
                 DecoderLayer(
                     AttentionLayer(Attn(True, factor, attention_dropout=dropout, output_attention=False), 
-                                d_model, n_heads, mix=mix,attn=attn,seq_len=seq_len - out_len),
+                                d_model, n_heads, mix=mix,attn=attn,seq_len=label_len + out_len),
                     AttentionLayer(FullAttention(False, factor, attention_dropout=dropout, output_attention=False), 
-                                d_model, n_heads, mix=False, attn=None,seq_len=(seq_len - out_len)),
+                                d_model, n_heads, mix=False, attn=None,seq_len=(label_len + out_len)),
                     d_model,
                     d_ff,
                     dropout=dropout,

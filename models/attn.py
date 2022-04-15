@@ -144,13 +144,15 @@ class AttentionLayer(nn.Module):
 
         self.inner_attention = attention
         self.query_projection = nn.Linear(d_model, d_keys * n_heads)
-        if (self.lam == False):
-            self.key_projection = nn.Linear(d_model, d_keys * n_heads)
-            self.value_projection = nn.Linear(d_model, d_values * n_heads)
-        else:
+        if (self.lam):
             self.key_projection = nn.Linear(d_model, d_keys)
             self.value_projection = nn.Linear(d_model, d_values)
             self.embedding = nn.Parameter(torch.randn([seq_len,seq_len,d_keys]), requires_grad=True)
+
+        else:
+            self.key_projection = nn.Linear(d_model, d_keys * n_heads)
+            self.value_projection = nn.Linear(d_model, d_values * n_heads)
+           
             
         self.out_projection = nn.Linear(d_values * n_heads, d_model)
         self.n_heads = n_heads
