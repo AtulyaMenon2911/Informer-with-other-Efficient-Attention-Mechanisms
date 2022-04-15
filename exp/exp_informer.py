@@ -214,9 +214,9 @@ class Exp_Informer(Exp_Basic):
         print('test shape:', preds.shape, trues.shape)
 
         # result save
-        folder_path = './results/' + setting +'/'
+        folder_path = f'{self.args.checkpoints}/{setting}/results/'
         if not os.path.exists(folder_path):
-            os.makedirs(folder_path)
+            os.makedirs(folder_path,exist_ok=True)
 
         mae, mse, rmse, mape, mspe = metric(preds, trues)
         print('mse:{}, mae:{}'.format(mse, mae))
@@ -248,7 +248,7 @@ class Exp_Informer(Exp_Basic):
         preds = preds.reshape(-1, preds.shape[-2], preds.shape[-1])
         
         # result save
-        folder_path = './results/' + setting +'/'
+        folder_path = f'{self.args.checkpoints}/{setting}/results/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
         
