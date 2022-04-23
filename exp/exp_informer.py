@@ -1,3 +1,4 @@
+from tracemalloc import start
 from data.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_Pred
 from exp.exp_basic import Exp_Basic
 from models.model import Informer, InformerStack
@@ -14,6 +15,7 @@ from torch.utils.data import DataLoader
 
 import os
 import time
+import statistics
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -21,6 +23,7 @@ warnings.filterwarnings('ignore')
 class Exp_Informer(Exp_Basic):
     def __init__(self, args):
         super(Exp_Informer, self).__init__(args)
+        
     
     def _build_model(self):
         model_dict = {
@@ -124,6 +127,7 @@ class Exp_Informer(Exp_Basic):
         return total_loss
 
     def train(self, setting):
+        epochs_time = []
         train_data, train_loader = self._get_data(flag = 'train')
         vali_data, vali_loader = self._get_data(flag = 'val')
         test_data, test_loader = self._get_data(flag = 'test')
@@ -173,7 +177,7 @@ class Exp_Informer(Exp_Basic):
                 else:
                     loss.backward()
                     model_optim.step()
-
+            epochs_time.append(time.time()-epoch_time)
             print("Epoch: {} cost time: {}".format(epoch+1, time.time()-epoch_time))
             train_loss = np.average(train_loss)
             vali_loss = self.vali(vali_data, vali_loader, criterion)
@@ -188,6 +192,9 @@ class Exp_Informer(Exp_Basic):
 
             adjust_learning_rate(model_optim, epoch+1, self.args)
             
+        
+        with open(path+"/epoch_cost_time.txt","w") as file:
+            file.write(f"{statistics.mean(epochs_time)},{statistics.stdev(epochs_time)}")
         best_model_path = path+'/'+'checkpoint.pth'
         self.model.load_state_dict(torch.load(best_model_path))
         
@@ -195,7 +202,7 @@ class Exp_Informer(Exp_Basic):
 
     def test(self, setting):
         test_data, test_loader = self._get_data(flag='test')
-        
+        inferences_time = []
         self.model.eval()
         
         preds = []
@@ -203,8 +210,10 @@ class Exp_Informer(Exp_Basic):
         
         with torch.no_grad():
             for i, (batch_x,batch_y,batch_x_mark,batch_y_mark) in enumerate(test_loader):
+                start = time.time()
                 pred, true = self._process_one_batch(
                     test_data, batch_x, batch_y, batch_x_mark, batch_y_mark)
+                inferences_time.append(time.time()-start)
                 preds.append(pred.detach().cpu().numpy())
                 trues.append(true.detach().cpu().numpy())
 
@@ -226,7 +235,8 @@ class Exp_Informer(Exp_Basic):
         np.save(folder_path+'metrics.npy', np.array([mae, mse, rmse, mape, mspe]))
         np.save(folder_path+'pred.npy', preds)
         np.save(folder_path+'true.npy', trues)
-
+        with open(folder_path+"/inferences_time.txt","w") as file:
+            file.write(f"{statistics.mean(inferences_time)},{statistics.stdev(inferences_time)}")
         return
 
     def predict(self, setting, load=False):
