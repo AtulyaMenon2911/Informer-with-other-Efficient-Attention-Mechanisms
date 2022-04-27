@@ -9,7 +9,7 @@ from math import sqrt
 from utils.masking import TriangularCausalMask, ProbMask
 
 class FullAttention(nn.Module):
-    def __init__(self, mask_flag=True, factor=5, scale=None, attention_dropout=0.1, output_attention=False):
+    def __init__(self, mask_flag=True, factor=5, scale=None, attention_dropout=0.1, output_attention=False,fraction=None):
         super(FullAttention, self).__init__()
         self.scale = scale
         self.mask_flag = mask_flag
@@ -37,7 +37,7 @@ class FullAttention(nn.Module):
             return (V.contiguous(), None)
 
 class ProbAttention(nn.Module):
-    def __init__(self, mask_flag=True, factor=5, scale=None, attention_dropout=0.1, output_attention=False):
+    def __init__(self, mask_flag=True, factor=5, scale=None, attention_dropout=0.1, output_attention=False,fraction=None):
         super(ProbAttention, self).__init__()
         self.factor = factor
         self.scale = scale
@@ -191,7 +191,7 @@ class AttentionLayer(nn.Module):
 
 
 class QuerySelector(nn.Module):
-    def __init__(self, fraction=0.33,mask_flag=True, factor=5, scale=None, attention_dropout=0.1, output_attention=False):
+    def __init__(self,mask_flag=True, factor=5, scale=None, attention_dropout=0.1, output_attention=False, fraction=0.33):
         super(QuerySelector, self).__init__()
         self.fraction = fraction
 
@@ -215,7 +215,7 @@ class QuerySelector(nn.Module):
 
 
 class LambdaModule(nn.Module):
-    def __init__(self, mask_flag=True, factor=5, attention_dropout=0.1, output_attention=False):
+    def __init__(self, mask_flag=True, factor=5, attention_dropout=0.1, output_attention=False,fraction=None):
         #False,False, factor, attention_dropout=dropout, output_attention=output_attention
         super(LambdaModule, self).__init__()
         #self.scale = scale
