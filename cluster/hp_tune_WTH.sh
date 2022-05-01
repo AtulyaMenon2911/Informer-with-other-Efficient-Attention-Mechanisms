@@ -8,5 +8,5 @@
 export PATH="/home/praphul/anaconda3/bin:$PATH"
 source activate informer-env
 
-srun -u python  hp_search.py --model informer  --checkpoints ${1}  --data WTH --root_path ./  --attn qs --des 'Exp' --itr 5 --factor 5 --batch_size 16 --train_epochs 12
-srun -u python  hp_search.py --model informer  --checkpoints ${1} --data WTH --root_path ./   --attn lam --des 'Exp' --itr 5 --factor 5 --batch_size 16 --train_epochs 12
+srun -u python  hp_search.py --model informer  --data WTH --root_path ./  --attn qs --des 'Exp' --itr 5 --factor 5 --batch_size 16 --train_epochs 12
+srun -u python  hp_search.py --model informer  --data WTH --root_path ./   --attn lam --des 'Exp' --itr 5 --factor 5 --batch_size 16 --train_epochs 12
