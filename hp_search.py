@@ -141,6 +141,10 @@ for params in param_grid:
     models = []
     val_scores = []
     [setattr(args, key, val) for key, val in params.items()]
+    data_info = data_parser[args.data]
+    args.data_path = data_info['data']
+    args.target = data_info['T']
+    args.enc_in, args.dec_in, args.c_out = data_info[params.features]
     if(args.seq_len >= args.label_len):
         for i in range(args.itr):
             setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(args.model, args.data, args.features,
@@ -179,6 +183,10 @@ print("Training the best models")
 for _, parmas in results_dict.items():
     for ii in range(args.itr):
         [setattr(args, key, val) for key, val in params.items()]
+        data_info = data_parser[args.data]
+        args.data_path = data_info['data']
+        args.target = data_info['T']
+        args.enc_in, args.dec_in, args.c_out = data_info[params.features]
         setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(args.model, args.data, args.features,
                                                                                                              args.seq_len, args.label_len, args.pred_len,
                                                                                                              args.d_model, args.n_heads, args.e_layers, args.d_layers, args.d_ff, args.attn, args.factor,
