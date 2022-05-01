@@ -1,11 +1,13 @@
+import json
 from hyperparameter_dict import create_hyperparameter_dict
 import argparse
 import os
 import torch
 from sklearn.model_selection import ParameterGrid
 from exp.exp_informer import Exp_Informer
-
-
+import numpy as np
+from pathlib import Path
+import json
 parser = argparse.ArgumentParser(
     description='[Informer] Long Sequences Forecasting')
 
@@ -97,6 +99,7 @@ parser.add_argument('--use_multi_gpu', action='store_true',
                     help='use multiple gpus', default=False)
 parser.add_argument('--devices', type=str, default='0,1,2,3',
                     help='device ids of multile gpus')
+parser.add_argument("--hp_results_folder", type=str, default="./hp_search")
 
 args = parser.parse_args()
 
@@ -126,10 +129,71 @@ if args.data in data_parser.keys():
 args.s_layers = [int(s_l) for s_l in args.s_layers.replace(' ', '').split(',')]
 args.detail_freq = args.freq
 args.freq = args.freq[-1:]
+
 hp_dict = create_hyperparameter_dict(args.data, args.attn)
+
+Exp = Exp_Informer
+
 param_grid = ParameterGrid(hp_dict)
-for i in range(args.itr):
-    for params in param_grid:
+results_dict = {}
+params_results_dict = {}
+for params in param_grid:
+    models = []
+    val_scores = []
+    [setattr(args, key, val) for key, val in params.items()]
+    if(args.seq_len >= args.label_len):
+        for i in range(args.itr):
+            setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(args.model, args.data, args.features,
+                                                                                                                 args.seq_len, args.label_len, args.pred_len,
+                                                                                                                 args.d_model, args.n_heads, args.e_layers, args.d_layers, args.d_ff, args.attn, args.factor,
+                                                                                                                 args.embed, args.distil, args.mix, args.des, i)
+            print('Args in experiment:')
+            print(args)
+            exp = Exp(args)  # set experiments
+            print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
+            exp.train(setting, only_val=True)
+            val_scores.append(exp.best_val_score)
+            torch.cuda.empty_cache()
+
+        avg_loss = np.mean(val_scores)
+        entry = f"{args.pred_len}_{args.features}_{args.attn}"
+        if(entry not in results_dict or results_dict[entry] > avg_loss):
+            results_dict[entry] = avg_loss
+            params_results_dict[entry] = params
+            print(
+                f"Setting best result for attention model {args.attn} on dataset {args.data} with features {args.features} and prediction len {args.pred_len}")
+            print(f"Parameters: {params}")
+
+folder_results = f"{args.hp_results_folder}/{args.data}/{args.attn}"
+Path(folder_results).mkdir(exist_ok=True, parents=True)
+
+with(f"{folder_results}/results.json", "w+") as file:
+    json.dump(results_dict, file)
+
+with(f"{folder_results}/params_dict.json", "w+") as file:
+    json.dump(params_results_dict, file)
+
+
+print("Training the best models")
+
+for _, parmas in results_dict.items():
+    for ii in range(args.itr):
         [setattr(args, key, val) for key, val in params.items()]
-        print('Args in experiment:')
-        print(args)
+        setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(args.model, args.data, args.features,
+                                                                                                             args.seq_len, args.label_len, args.pred_len,
+                                                                                                             args.d_model, args.n_heads, args.e_layers, args.d_layers, args.d_ff, args.attn, args.factor,
+                                                                                                             args.embed, args.distil, args.mix, args.des, ii)
+
+        exp = Exp(args)  # set experiments
+        print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
+        exp.train(setting)
+
+        print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
+        exp.test(setting)
+
+        if args.do_predict:
+            print(
+                '>>>>>>>predicting : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
+            exp.predict(setting, True)
+
+        torch.cuda.empty_cache()
