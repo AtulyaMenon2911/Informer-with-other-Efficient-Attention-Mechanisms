@@ -142,6 +142,7 @@ class Exp_Informer(Exp_Basic):
         epochs_time = []
         train_data, train_loader = self._get_data(flag='train')
         vali_data, vali_loader = self._get_data(flag='val')
+        path = None
         if not only_val:
             test_data, test_loader = self._get_data(flag='test')
             path = os.path.join(self.args.checkpoints, setting)
