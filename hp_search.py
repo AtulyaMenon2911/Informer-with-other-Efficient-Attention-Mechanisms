@@ -171,10 +171,10 @@ for params in param_grid:
 folder_results = f"{args.hp_results_folder}/{args.data}/{args.attn}"
 Path(folder_results).mkdir(exist_ok=True, parents=True)
 
-with(f"{folder_results}/results.json", "w+") as file:
+with open(f"{folder_results}/results.json", "w+") as file:
     json.dump(results_dict, file)
 
-with(f"{folder_results}/params_dict.json", "w+") as file:
+with open(f"{folder_results}/params_dict.json", "w+") as file:
     json.dump(params_results_dict, file)
 
 
