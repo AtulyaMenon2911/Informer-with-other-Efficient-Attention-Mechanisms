@@ -145,6 +145,13 @@ for params in param_grid:
     args.data_path = data_info['data']
     args.target = data_info['T']
     args.enc_in, args.dec_in, args.c_out = data_info[args.features]
+    if(args.seq_len > 300):
+        args.batch_size = 16
+        args.train_epochs = 16
+    else:
+        args.batch_size = 32
+        args.train_epochs = 12
+
     if(args.seq_len >= args.label_len):
         for i in range(args.itr):
             setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(args.model, args.data, args.features,
@@ -186,6 +193,13 @@ for _, params in params_results_dict.items():
     args.data_path = data_info['data']
     args.target = data_info['T']
     args.enc_in, args.dec_in, args.c_out = data_info[args.features]
+    if(args.seq_len > 300):
+        args.batch_size = 16
+        args.train_epochs = 16
+    else:
+        args.batch_size = 32
+        args.train_epochs = 12
+
     for ii in range(args.itr):
 
         setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(args.model, args.data, args.features,
