@@ -216,6 +216,8 @@ class Exp_Informer(Exp_Basic):
             with open(path+"/epoch_cost_time.txt", "w") as file:
                 file.write(
                     f"{statistics.mean(epochs_time)},{statistics.stdev(epochs_time)}")
+            with open(path+"/number_parameters.txt", "w") as file:
+                file.write(sum(map(torch.numel, self.model.parameters())))
             best_model_path = path+'/'+'checkpoint.pth'
             self.model.load_state_dict(torch.load(best_model_path))
         else:
