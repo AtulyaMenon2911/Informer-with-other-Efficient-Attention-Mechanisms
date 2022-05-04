@@ -12,7 +12,7 @@ hyperarameter_dict = {
             "features": ["S", "M"]
         },
         "qs": {
-            "fraction": [0.1],  # , 0.2, 0.3, 0.4, 0.4, 0.6]
+            "fraction": [0.1, 0.2, 0.3, 0.4, 0.4, 0.6]
 
         }
     },
