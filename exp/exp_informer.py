@@ -209,7 +209,7 @@ class Exp_Informer(Exp_Basic):
             if early_stopping.early_stop:
                 print("Early stopping")
                 break
-            print(early_stopping.best_score)
+            print("best score {0:7f}".format(early_stopping.best_score))
 
             adjust_learning_rate(model_optim, epoch+1, self.args)
 
