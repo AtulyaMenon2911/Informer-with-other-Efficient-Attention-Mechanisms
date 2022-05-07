@@ -164,9 +164,11 @@ for params in param_grid:
             print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
             exp.train(setting, only_val=True)
             val_scores.append(exp.best_val_score)
+            print(val_scores)
             torch.cuda.empty_cache()
 
         avg_loss = np.mean(val_scores)
+        print(avg_loss)
         entry = f"{args.pred_len}_{args.features}_{args.attn}"
         if(entry not in results_dict or results_dict[entry] > avg_loss):
             results_dict[entry] = avg_loss
