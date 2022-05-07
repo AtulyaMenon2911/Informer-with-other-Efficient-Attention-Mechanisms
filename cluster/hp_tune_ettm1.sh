@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 #SBATCH --job-name=informer_train
 #SBATCH --output=informer_train%j.log
