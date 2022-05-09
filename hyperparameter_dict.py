@@ -1,7 +1,7 @@
 hyperarameter_dict = {
     "ETTh1": {
         "all": {
-            "n_heads": [2, 4, 8, 16],  # 2,16
+            "n_heads": [4, 8],  # 2,16
             "weight_decay": [0.1, 0.01, 0.001],
             # "dropout": [0.05, 0.1, 0.15],
             # "e_layers": [2, 3, 4],
@@ -12,13 +12,13 @@ hyperarameter_dict = {
             # "features": ["S", "M"]
         },
         "qs": {
-            "fraction": [0.2, 0.3, 0.4, 0.5]
+            "fraction": [0.2, 0.3, 0.4]
 
         }
     },
     "ETTm1": {
         "all": {
-            "n_heads": [2, 4, 8, 16],  # 2,16
+            "n_heads": [4, 8],  # 2,16
             "weight_decay": [0.1, 0.01, 0.001],
             # "dropout": [0.05, 0.1, 0.15],
             # "e_layers": [2, 3, 4],
@@ -29,13 +29,13 @@ hyperarameter_dict = {
             # "features": ["S", "M"]
         },
         "qs": {
-            "fraction": [0.2, 0.3, 0.4, 0.5]
+            "fraction": [0.2, 0.3, 0.4]
 
         }
     },
     "WTH": {
         "all": {
-            "n_heads": [2, 4, 8, 16],  # 2,16
+            "n_heads": [4, 8],  # 2,16
             "weight_decay": [0.1, 0.01, 0.001],
             # "dropout": [0.05, 0.1, 0.15],
             # "e_layers": [2, 3, 4],
@@ -46,7 +46,7 @@ hyperarameter_dict = {
             # "features": ["S", "M"]
         },
         "qs": {
-            "fraction": [0.2, 0.3, 0.4, 0.5]
+            "fraction": [0.2, 0.3, 0.4]
 
         }
     },
